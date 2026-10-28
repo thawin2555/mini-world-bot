@@ -1,0 +1,116 @@
+```js
+require('dotenv').config();
+
+const {
+    Client,
+    GatewayIntentBits,
+    EmbedBuilder
+} = require('discord.js');
+
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent
+    ]
+});
+
+client.once('ready', () => {
+    console.log(`✅ บอทออนไลน์แล้ว: ${client.user.tag}`);
+    console.log(`📡 จำนวนเซิร์ฟเวอร์: ${client.guilds.cache.size}`);
+});
+
+client.on('messageCreate', async (message) => {
+    if (message.author.bot) return;
+
+    if (!message.content.startsWith('!check')) return;
+
+    const args = message.content.trim().split(/\s+/);
+    const uid = args[1];
+
+    if (!uid) {
+        return message.reply(
+            '❌ กรุณาระบุ UID เช่น `!check 1284451889`'
+        );
+    }
+
+    // ข้อมูลตัวอย่างเท่านั้น ไม่ใช่ข้อมูลที่ดึงจาก UID จริง
+    const profile = {
+        username: 'ExampleUser',
+        status: '🟢 Active',
+        gender: 'ไม่ระบุ',
+        bio: 'ตัวอย่างโปรไฟล์',
+        country: 'ไม่ระบุ',
+        miniCoin: '0',
+        miniBean: '0',
+        treeLevel: '1'
+    };
+
+    const embed = new EmbedBuilder()
+        .setTitle(`Profile Information: ${profile.username}`)
+        .setColor(0x00FF00)
+        .addFields(
+            {
+                name: 'Status',
+                value: profile.status,
+                inline: true
+            },
+            {
+                name: 'Username',
+                value: profile.username,
+                inline: true
+            },
+            {
+                name: 'UID',
+                value: uid,
+                inline: true
+            },
+            {
+                name: 'Gender',
+                value: profile.gender,
+                inline: true
+            },
+            {
+                name: 'Bio',
+                value: profile.bio,
+                inline: false
+            },
+            {
+                name: 'Country',
+                value: profile.country,
+                inline: true
+            },
+            {
+                name: 'Mini Coin',
+                value: profile.miniCoin,
+                inline: true
+            },
+            {
+                name: 'Mini Bean',
+                value: profile.miniBean,
+                inline: true
+            },
+            {
+                name: 'Tree Level',
+                value: profile.treeLevel,
+                inline: true
+            }
+        )
+        .setFooter({
+            text: 'ข้อมูลตัวอย่าง ไม่ใช่ผลการค้นหาจริง'
+        })
+        .setTimestamp();
+
+    try {
+        await message.reply({
+            embeds: [embed]
+        });
+    } catch (error) {
+        console.error('❌ ส่ง Embed ไม่สำเร็จ:', error.message);
+    }
+});
+
+client.login(process.env.DISCORD_TOKEN).catch((error) => {
+    console.error('❌ เข้าสู่ระบบ Discord ไม่สำเร็จ:', error.message);
+});
+```
